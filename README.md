@@ -15,7 +15,7 @@
   </a>
 </p>
 
-BBjDrawer is a custom BBj Widget for the DWC which allows for building common application layouts.
+A Custom BBj Widget for the DWC to build popover drawers
 
 ## Installation
 
