@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, viewport-fit=cover, user-scalable=no"
+    />
+    <title>BBjDrawer - Welcome Page</title>
+    <script
+      type="module"
+      src="//s3-eu-west-1.amazonaws.com/cdn.bbx.kitchen/next/bbj-ui.esm.js"
+    ></script>
+    <script nomodule src="//s3-eu-west-1.amazonaws.com/cdn.bbx.kitchen/next/bbj-ui.js"></script>
+
+    <link rel="stylesheet" href="//s3-eu-west-1.amazonaws.com/cdn.bbx.kitchen/next/bbj-ui.css" />
+    <style>
+      html,
+      body {
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100vw;
+        height: 100vh;
+      }
+
+      .contactsList {
+        padding: var(--bbj-space-m);
+      }
+
+      .bookEntry {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        padding: var(--bbj-space-s);
+        cursor: var(--bbj-cursor-click);
+        transition: background-color var(--bbj-transition);
+        border-bottom: thin solid var(--bbj-color-default);
+      }
+
+      .bookEntry:hover {
+        background-color: var(--bbj-color-primary-alt);
+      }
+
+      .bookEntry__avatar {
+        display: flex;
+        align-items: center;
+        width: var(--bbj-size-l);
+        height: var(--bbj-size-l);
+        border-radius: var(--bbj-border-radius-round);
+        overflow: hidden;
+      }
+
+      .bookEntry__avatar img {
+        width: 100%;
+        height: 100%;
+      }
+
+      .bookEntry__info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .bookEntry__location {
+        font-size: var(--bbj-font-size-s);
+        color: var(--bbj-color-default-text);
+      }
+    </style>
+  </head>
+
+  <body>
+    <bbj-button theme="primary" expanse="l" class="toggle-drawer">Open Contacts Picker</bbj-button>
+    <bbj-drawer placement="bottom-center" size="70vh" opened>
+      <div class="contactsList"></div>
+    </bbj-drawer>
+
+    <script>
+      const toggleDrawerButton = document.querySelectorAll(".toggle-drawer");
+      toggleDrawerButton.forEach((button) => {
+        button.addEventListener("click", () => {
+          const drawer = document.querySelector("bbj-drawer");
+          drawer.opened = !drawer.opened;
+        });
+      });
+
+      fetch("./assets/contacts.json")
+        .then((response) => response.json())
+        .then((contacts) => {
+          const contactsList = document.querySelector(".contactsList");
+          contacts.forEach((contact) => {
+            const contactElement = document.createElement("div");
+            const firstName = contact.FIRST_NAME;
+            const lastName = contact.LAST_NAME;
+            const fullName = `${firstName} ${lastName}`;
+            const phone = contact.PHONE;
+            const country = contact.COUNTRY;
+            const city = contact.CITY;
+            const fullLocation = `${country} - ${city}`;
+
+            contactElement.innerHTML = `
+            <div class="bookEntry">
+              <div class="bookEntry__avatar">
+                <img src="https://ui-avatars.com/api/?name=${fullName}&&background=random" alt="${contact.name}" />
+              </div>
+              <div class="bookEntry__info">
+                <div class="bookEntry__name">${fullName}</div>
+                <div class="bookEntry__phone">${fullLocation}</div>
+              </div>
+              <bbj-button data-phone=${phone}>
+                  <bbj-icon name="phone"></bbj-icon>
+              </bbj-button>
+            </div>
+          `;
+            contactsList.appendChild(contactElement);
+          });
+
+          const phoneListener = document.querySelectorAll("[data-phone]");
+          phoneListener.forEach((button) => {
+            button.addEventListener("click", (e) => {
+              const phone = e.target.dataset.phone;
+              window.open(`tel:${phone}`, "_self");
+            });
+          });
+        });
+    </script>
+  </body>
+</html>

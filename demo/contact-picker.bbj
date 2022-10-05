@@ -1,0 +1,145 @@
+style! = "
+: .root {
+:   display: flex;
+:   align-items: center;
+:   justify-content: center;
+:   width: 100vw;
+:   height: 100vh;
+: }
+:  
+: .contactsList {
+:   padding: var(--bbj-space-m);
+: }
+:
+: .bookEntry {
+:   display: flex;
+:   gap: 1rem;
+:   align-items: center;
+:   padding: var(--bbj-space-s);
+:   cursor: var(--bbj-cursor-click);
+:   transition: background-color var(--bbj-transition);
+:   border-bottom: thin solid var(--bbj-color-default);
+:   border-style: solid !important; 
+: }
+:
+: .bookEntry:hover {
+:   background-color: var(--bbj-color-primary-alt);
+: }
+:
+: .bookEntry__avatar {
+:   display: flex;
+:   align-items: center;
+:   width: var(--bbj-size-l);
+:   height: var(--bbj-size-l);
+:   border-radius: var(--bbj-border-radius-round);
+: }
+:
+: .bookEntry__avatar img {
+:   width: 100%;
+:   height: 100%;
+: }
+:
+: .bookEntry__info {
+:   flex: 1;
+:   display: flex;
+:   flex-direction: column;
+: }
+:
+: .bookEntry__location {
+:   font-size: var(--bbj-font-size-s);
+:   color: var(--bbj-color-default-text);
+: }  
+:"
+
+use ::BBjDrawer/BBjDrawer.bbj::BBjDrawer
+use com.basiscomponents.db.ResultSet
+use com.basiscomponents.bc.SqlQueryBC
+
+web! = BBjAPI().getWebManager()
+web!.injectStyle(style!, 0)
+
+sysgui! =  BBjAPI().openSysGui("X0")
+
+wnd! = sysgui!.addWindow("BBjDrawer", $01101000$)
+wnd!.addPanelStyle("root")
+wnd!.setCallback(BBjAPI.ON_CLOSE,"eoj")
+
+contactsButton! = wnd!.addButton("Open Contacts Picker")
+contactsButton!.setCallback(BBjAPI.ON_BUTTON_PUSH,"onOpenContactsDrawer")
+contactsButton!.setAttribute("theme", "primary")
+contactsButton!.setAttribute("expanse", "l")
+
+rem Contacts Drawer
+rem ==================
+contactsDrawer! = new BBjDrawer(wnd!)
+contactsDrawer!.setPlacement(BBjDrawer.PLACEMENT_BOTTOM_CENTER)
+contactsDrawer!.setDrawerSize("70vh")
+
+container! = contactsDrawer!.getContainer()
+container!.addStyle("contactsList")
+
+sql! = new SqlQueryBC(BBjAPI().getJDBCConnection("ChileCompany"))
+items! = sql!.retrieve("SELECT * FROM CUSTOMER")
+iterator! = items!.iterator()
+
+while iterator!.hasNext()
+  item! = iterator!.next()
+  firstName! = item!.getField("FIRST_NAME").getString().trim()
+  lastName! = item!.getField("LAST_NAME").getString().trim()
+  fullName! = firstName! + " " + lastName!
+  phone! = item!.getField("PHONE").getString().trim()
+  country! = item!.getField("COUNTRY").getString().trim()
+  city! = item!.getField("CITY").getString().trim()
+  fullLocation! = country! + " - " + city!
+
+  card! = container!.addChildWindow("", $00108800$, sysgui!.getAvailableContext())
+  card!.addStyle("bookEntry")
+
+  avatarContent! = "<html><img src=""https://ui-avatars.com/api/?name=" + fullName! + "&&background=random"" /></html>"
+  avatar! = card!.addStaticText(avatarContent!)
+  avatar!.addStyle("bookEntry__avatar")
+
+  info! = card!.addChildWindow("", $00108800$, sysgui!.getAvailableContext())
+  info!.addStyle("bookEntry__info")
+
+  name! = info!.addStaticText(fullName!)
+  name!.addStyle("bookEntry__name")
+
+  location! = info!.addStaticText(fullLocation!)
+  location!.addStyle("bookEntry__location")
+
+  call! = card!.addButton("<html><bbj-icon name=""phone""></bbj-icon></html>")
+  call!.setEnabled(len(phone!) > 0)
+  call!.setUserData(phone!)
+  call!.setCallback(call!.ON_BUTTON_PUSH, "onCall")
+wend
+
+wait 1
+contactsDrawer!.open()
+
+process_events
+
+onOpenContactsDrawer:
+  contactsDrawer!.open()
+return
+
+onCall:
+  contactsDrawer!.close()
+  
+  ev! = BBjAPI().getLastEvent()
+  control! = ev!.getControl()
+  phone! = str(control!.getUserData())
+  script! = "" +
+:    "(() => {" +
+:    " const link = document.createElement('a');" +
+:    " link.href='tel:" + phone! + "';" +
+:    " link.style.visibility='hidden';" +
+:    " document.body.appendChild(link);" +
+:    " link.click();" +
+:    " document.body.removeChild(link)" +
+:    "})()"
+  BBjAPI().getSysGui().executeScript(script!)
+return
+
+eoj:
+release
