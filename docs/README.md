@@ -16,6 +16,7 @@
 </p>
 
 <!-- Document Links: -->
+
 [bbjchildwindow]: https://documentation.basis.cloud/BASISHelp/WebHelp/bbjobjects/Window/bbjchildwindow/bbjchildwindow.htm
 [bbjcontrol]: https://documentation.basis.cloud/BASISHelp/WebHelp/bbjobjects/Window/bbjwindow/bbjwindow.htm
 [css-vars]: https://basishub.github.io/basis-next/#/theme-engine/css-variables
@@ -42,7 +43,7 @@ And much more !
 
 ## The gist
 
-The following sample shows how to use the `BBjDrawer` widget. The widget will provide a container which is 
+The following sample shows how to use the `BBjDrawer` widget. The widget will provide a container which is
 an instance of [`BBjChildWindow`][bbjchildwindow] which can contain any valid [BBjControl][bbjcontrol].
 
 ```bbj
@@ -209,7 +210,7 @@ welcomePage!.open()
 process_events
 
 onPageChanged:
-  event! = sysgui!.getLastEvent() 
+  event! = sysgui!.getLastEvent()
   title$ = event!.getTitle().replaceAll("<[^>]*>","").trim()
 
   pageContent!.setText("<html><p>Content for " + title$ + " goes here</p></html>")
@@ -264,12 +265,15 @@ onDrawerToggled:
   payload! = event!.getObject()
 
   let x = MSGBOX("Is Opened = " + str(payload!.isrOpened()), 0, "Drawer Toggled")
-return 
+return
 ```
+
+<div>
+</div>
 
 ## Contact Picker Sample
 
-The following sample shows how to use the `BBjDrawer` widget to create a contact picker using the `ChileCompany` 
+The following sample shows how to use the `BBjDrawer` widget to create a contact picker using the `ChileCompany`
 customers data.
 
 <div class="demo demo--phone">
@@ -300,7 +304,7 @@ style! = "
 :   width: 100vw;
 :   height: 100vh;
 : }
-:  
+:
 : .contactsList {
 :   padding: var(--bbj-space-m);
 : }
@@ -313,7 +317,7 @@ style! = "
 :   cursor: var(--bbj-cursor-click);
 :   transition: background-color var(--bbj-transition);
 :   border-bottom: thin solid var(--bbj-color-default);
-:   border-style: solid !important; 
+:   border-style: solid !important;
 : }
 :
 : .bookEntry:hover {
@@ -342,7 +346,7 @@ style! = "
 : .bookEntry__location {
 :   font-size: var(--bbj-font-size-s);
 :   color: var(--bbj-color-default-text);
-: }  
+: }
 :"
 
 use ::BBjDrawer/BBjDrawer.bbj::BBjDrawer
@@ -419,7 +423,7 @@ return
 
 onCall:
   contactsDrawer!.close()
-  
+
   ev! = BBjAPI().getLastEvent()
   control! = ev!.getControl()
   phone! = str(control!.getUserData())
@@ -438,5 +442,6 @@ return
 eoj:
 release
 ```
+
   </div>
 </div>
