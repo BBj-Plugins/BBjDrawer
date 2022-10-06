@@ -16,7 +16,6 @@
 </p>
 
 <!-- Document Links: -->
-
 [bbjchildwindow]: https://documentation.basis.cloud/BASISHelp/WebHelp/bbjobjects/Window/bbjchildwindow/bbjchildwindow.htm
 [bbjcontrol]: https://documentation.basis.cloud/BASISHelp/WebHelp/bbjobjects/Window/bbjwindow/bbjwindow.htm
 [css-vars]: https://basishub.github.io/basis-next/#/theme-engine/css-variables
@@ -43,7 +42,7 @@ And much more !
 
 ## The gist
 
-The following sample shows how to use the `BBjDrawer` widget. The widget will provide a container which is
+The following sample shows how to use the `BBjDrawer` widget. The widget will provide a container which is 
 an instance of [`BBjChildWindow`][bbjchildwindow] which can contain any valid [BBjControl][bbjcontrol].
 
 ```bbj
@@ -210,7 +209,7 @@ welcomePage!.open()
 process_events
 
 onPageChanged:
-  event! = sysgui!.getLastEvent()
+  event! = sysgui!.getLastEvent() 
   title$ = event!.getTitle().replaceAll("<[^>]*>","").trim()
 
   pageContent!.setText("<html><p>Content for " + title$ + " goes here</p></html>")
@@ -223,6 +222,26 @@ return
 
 eoj:
 release
+```
+  </div>
+</div>
+
+## Drawer Placement
+
+The drawer can be placed in six different positions:
+
+1. `BBjDrawer.PLACEMENT_LEFT`
+2. `BBjDrawer.PLACEMENT_RIGHT`
+3. `BBjDrawer.PLACEMENT_TOP`
+4. `BBjDrawer.PLACEMENT_TOP_CENTER`
+5. `BBjDrawer.PLACEMENT_BOTTOM`
+6. `BBjDrawer.PLACEMENT_BOTTOM_CENTER`
+
+```bbj
+use ::BBjDrawer/BBjDrawer.bbj::BBjDrawer
+
+welcomePage! = new BBjDrawer(wnd!)
+welcomePage!.setPlacement(BBjDrawer.PLACEMENT_BOTTOM_CENTER)
 ```
 
 ## Drawer Sizing
@@ -265,15 +284,14 @@ onDrawerToggled:
   payload! = event!.getObject()
 
   let x = MSGBOX("Is Opened = " + str(payload!.isrOpened()), 0, "Drawer Toggled")
-return
+return 
 ```
-
-<div>
+  </div>
 </div>
 
 ## Contact Picker Sample
 
-The following sample shows how to use the `BBjDrawer` widget to create a contact picker using the `ChileCompany`
+The following sample shows how to use the `BBjDrawer` widget to create a contact picker using the `ChileCompany` 
 customers data.
 
 <div class="demo demo--phone">
@@ -297,151 +315,136 @@ customers data.
 
 ```bbj line-numbers
 style! = "
-: .root {
-:   display: flex;
-:   align-items: center;
-:   justify-content: center;
-:   width: 100vw;
-:   height: 100vh;
+: body,html {overflow: hidden}
+:
+: .bbj-toolbar {
+:    display: flex;
+:    align-items: center;
+:    gap: var(--bbj-space-m);
+:    padding: 0 var(--bbj-space-m);
 : }
 :
-: .contactsList {
-:   padding: var(--bbj-space-m);
+: .bbj-logo {
+:    display: flex;
+:    align-items: center;
+:    justify-content: center;
+:    padding: var(--bbj-space-m) 0;
+:    margin-bottom: var(--bbj-space-m);
+:    border-bottom: thin solid var(--bbj-color-default)
 : }
 :
-: .bookEntry {
-:   display: flex;
-:   gap: 1rem;
-:   align-items: center;
-:   padding: var(--bbj-space-s);
-:   cursor: var(--bbj-cursor-click);
-:   transition: background-color var(--bbj-transition);
-:   border-bottom: thin solid var(--bbj-color-default);
-:   border-style: solid !important;
+: .bbj-logo img {
+:    max-width: 100px;
 : }
 :
-: .bookEntry:hover {
-:   background-color: var(--bbj-color-primary-alt);
+: .welcome-page {
+:    display: flex;
+:    flex-direction: column;
+:    align-items: center;
+:    justify-content: center;
+:    padding: var(--bbj-space-2xl);
+:    width: 100%;
 : }
 :
-: .bookEntry__avatar {
-:   display: flex;
-:   align-items: center;
-:   width: var(--bbj-size-l);
-:   height: var(--bbj-size-l);
-:   border-radius: var(--bbj-border-radius-round);
+: .welcome-page img {
+:    max-height: 300px;
 : }
 :
-: .bookEntry__avatar img {
-:   width: 100%;
-:   height: 100%;
-: }
-:
-: .bookEntry__info {
-:   flex: 1;
-:   display: flex;
-:   flex-direction: column;
-: }
-:
-: .bookEntry__location {
-:   font-size: var(--bbj-font-size-s);
-:   color: var(--bbj-color-default-text);
+: .welcome-page p {
+:    text-align: center;
 : }
 :"
 
 use ::BBjDrawer/BBjDrawer.bbj::BBjDrawer
-use com.basiscomponents.db.ResultSet
-use com.basiscomponents.bc.SqlQueryBC
+use ::BBjDrawer/BBjDrawer.bbj::BBjDrawer
 
 web! = BBjAPI().getWebManager()
+rem The app should include a viewport meta tag which contains `viewport-fit=cover`, like the following.
+rem This causes the viewport to be scaled to fill the device display.
+web!.setMeta("viewport", "width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no")
 web!.injectStyle(style!, 0)
 
 sysgui! =  BBjAPI().openSysGui("X0")
 
-wnd! = sysgui!.addWindow("BBjDrawer", $01101000$)
-wnd!.addPanelStyle("root")
+wnd! = sysgui!.addWindow("BBjDrawer", $01001000$)
 wnd!.setCallback(BBjAPI.ON_CLOSE,"eoj")
 
-contactsButton! = wnd!.addButton("Open Contacts Picker")
-contactsButton!.setCallback(BBjAPI.ON_BUTTON_PUSH,"onOpenContactsDrawer")
-contactsButton!.setAttribute("theme", "primary")
-contactsButton!.setAttribute("expanse", "l")
+app! = new BBjDrawer(wnd!)
 
-rem Contacts Drawer
+rem Header
 rem ==================
-contactsDrawer! = new BBjDrawer(wnd!)
-contactsDrawer!.setPlacement(BBjDrawer.PLACEMENT_BOTTOM_CENTER)
-contactsDrawer!.setDrawerSize("70vh")
+header! = app!.getHeader()
+toolbar! = header!.addChildWindow("", $00108800$, sysgui!.getAvailableContext())
+toolbar!.addStyle("bbj-toolbar")
+toolbar!.addStaticText("<html><bbj-icon-button name='menu-2' data-drawer-toggle></bbj-icon-button></html>")
+toolbar!.addStaticText("<html><h3>DWC Application</h3></html>")
 
-container! = contactsDrawer!.getContainer()
-container!.addStyle("contactsList")
+rem Drawer
+rem ==================
+drawer! = app!.getDrawer()
+drawer!.addStyle("bbj-drawer")
 
-sql! = new SqlQueryBC(BBjAPI().getJDBCConnection("ChileCompany"))
-items! = sql!.retrieve("SELECT * FROM CUSTOMER")
-iterator! = items!.iterator()
+logo! = drawer!.addImageCtrl("./assets/logo.png")
+logo!.addStyle("bbj-logo")
 
-while iterator!.hasNext()
-  item! = iterator!.next()
-  firstName! = item!.getField("FIRST_NAME").getString().trim()
-  lastName! = item!.getField("LAST_NAME").getString().trim()
-  fullName! = firstName! + " " + lastName!
-  phone! = item!.getField("PHONE").getString().trim()
-  country! = item!.getField("COUNTRY").getString().trim()
-  city! = item!.getField("CITY").getString().trim()
-  fullLocation! = country! + " - " + city!
+empty! = drawer!.addChildWindow("", $00000810$, sysgui!.getAvailableContext())
+drawerMenu! = drawer!.addTabCtrl()
+drawerMenu!.setCallback(drawerMenu!.ON_TAB_SELECT,"onPageChanged")
+drawerMenu!.setAttribute("nobody","true")
+drawerMenu!.setAttribute("borderless","true")
+drawerMenu!.setAttribute("placement","left")
+drawerMenu!.addTab("<bbj-icon name='dashboard'></bbj-icon>      Dashboard"    , empty!)
+drawerMenu!.addTab("<bbj-icon name='shopping-cart'></bbj-icon>  Orders"       , empty!)
+drawerMenu!.addTab("<bbj-icon name='users'></bbj-icon>          Customers"    , empty!)
+drawerMenu!.addTab("<bbj-icon name='box'></bbj-icon>            Products"     , empty!)
+drawerMenu!.addTab("<bbj-icon name='files'></bbj-icon>          Documents"    , empty!)
+drawerMenu!.addTab("<bbj-icon name='checklist'></bbj-icon>      Tasks"        , empty!)
+drawerMenu!.addTab("<bbj-icon name='chart-dots-2'></bbj-icon>   Analytics"    , empty!)
 
-  card! = container!.addChildWindow("", $00108800$, sysgui!.getAvailableContext())
-  card!.addStyle("bookEntry")
+rem Content
+rem ==================
+content! = app!.getContent()
+content!.addStaticText("<html><h1>Application Title</h1></html>")
+pageContent! = content!.addStaticText("<html><p>Content for Dashboard goes here</p></html>")
 
-  avatarContent! = "<html><img src=""https://ui-avatars.com/api/?name=" + fullName! + "&&background=random"" /></html>"
-  avatar! = card!.addStaticText(avatarContent!)
-  avatar!.addStyle("bookEntry__avatar")
+btn! = content!.addButton("Open Welcome Page")
+btn!.setCallback(BBjAPI.ON_BUTTON_PUSH,"toggleDrawer")
 
-  info! = card!.addChildWindow("", $00108800$, sysgui!.getAvailableContext())
-  info!.addStyle("bookEntry__info")
+rem Welcome Page
+rem ==================
+welcomePage! = new BBjDrawer(wnd!)
+welcomePage!.setPlacement(BBjDrawer.PLACEMENT_BOTTOM_CENTER)
+welcomePage!.setDrawerSize("90vh")
 
-  name! = info!.addStaticText(fullName!)
-  name!.addStyle("bookEntry__name")
+container! = welcomePage!.getContainer()
+container!.addStyle("welcome-page")
+container!.addImageCtrl("./assets/fun.svg")
+container!.addStaticText("<html><h2>Welcome to DWC</h2></html>")
+container!.addStaticText("<html><p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p></html>")
+btn! = container!.addButton("Get Started")
+btn!.setCallback(BBjAPI.ON_BUTTON_PUSH,"toggleDrawer")
+btn!.setAttribute("theme","primary")
+btn!.setAttribute("expanse","l")
 
-  location! = info!.addStaticText(fullLocation!)
-  location!.addStyle("bookEntry__location")
-
-  call! = card!.addButton("<html><bbj-icon name=""phone""></bbj-icon></html>")
-  call!.setEnabled(len(phone!) > 0)
-  call!.setUserData(phone!)
-  call!.setCallback(call!.ON_BUTTON_PUSH, "onCall")
-wend
-
+rem give the drawer sometime to load
 wait 1
-contactsDrawer!.open()
+welcomePage!.open()
 
 process_events
 
-onOpenContactsDrawer:
-  contactsDrawer!.open()
+onPageChanged:
+  event! = sysgui!.getLastEvent() 
+  title$ = event!.getTitle().replaceAll("<[^>]*>","").trim()
+
+  pageContent!.setText("<html><p>Content for " + title$ + " goes here</p></html>")
 return
 
-onCall:
-  contactsDrawer!.close()
-
-  ev! = BBjAPI().getLastEvent()
-  control! = ev!.getControl()
-  phone! = str(control!.getUserData())
-  script! = "" +
-:    "(() => {" +
-:    " const link = document.createElement('a');" +
-:    " link.href='tel:" + phone! + "';" +
-:    " link.style.visibility='hidden';" +
-:    " document.body.appendChild(link);" +
-:    " link.click();" +
-:    " document.body.removeChild(link)" +
-:    "})()"
-  BBjAPI().getSysGui().executeScript(script!)
+toggleDrawer:
+  welcomePage!.toggle()
 return
 
 eoj:
 release
 ```
-
   </div>
 </div>
