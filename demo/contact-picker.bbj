@@ -18,8 +18,7 @@ style! = "
 :   padding: var(--bbj-space-s);
 :   cursor: var(--bbj-cursor-click);
 :   transition: background-color var(--bbj-transition);
-:   border-bottom: thin solid var(--bbj-color-default);
-:   border-style: solid !important; 
+:   border-bottom: thin solid var(--bbj-color-default) !important;
 : }
 :
 : .bookEntry:hover {
@@ -60,10 +59,12 @@ web!.injectStyle(style!, 0)
 
 sysgui! =  BBjAPI().openSysGui("X0")
 
+declare auto BBjWindow wnd! 
 wnd! = sysgui!.addWindow("BBjDrawer", $01101000$)
 wnd!.addPanelStyle("root")
 wnd!.setCallback(BBjAPI.ON_CLOSE,"eoj")
 
+declare auto BBjButton contactsButton! 
 contactsButton! = wnd!.addButton("Open Contacts Picker")
 contactsButton!.setCallback(BBjAPI.ON_BUTTON_PUSH,"onOpenContactsDrawer")
 contactsButton!.setAttribute("theme", "primary")
@@ -71,12 +72,14 @@ contactsButton!.setAttribute("expanse", "l")
 
 rem Contacts Drawer
 rem ==================
+declare auto BBjDrawer contactsDrawer! 
 contactsDrawer! = new BBjDrawer(wnd!)
 contactsDrawer!.setPlacement(BBjDrawer.PLACEMENT_BOTTOM_CENTER)
-contactsDrawer!.setDrawerSize("70vh")
+contactsDrawer!.setSize("70vh")
 
-container! = contactsDrawer!.getContainer()
-container!.addStyle("contactsList")
+declare auto BBjChildWindow contactsDrawer! 
+content! = contactsDrawer!.getContent()
+content!.addStyle("contactsList")
 
 sql! = new SqlQueryBC(BBjAPI().getJDBCConnection("ChileCompany"))
 items! = sql!.retrieve("SELECT * FROM CUSTOMER")
@@ -92,7 +95,7 @@ while iterator!.hasNext()
   city! = item!.getField("CITY").getString().trim()
   fullLocation! = country! + " - " + city!
 
-  card! = container!.addChildWindow("", $00108800$, sysgui!.getAvailableContext())
+  card! = content!.addChildWindow("", $00108800$, sysgui!.getAvailableContext())
   card!.addStyle("bookEntry")
 
   avatarContent! = "<html><img src=""https://ui-avatars.com/api/?name=" + fullName! + "&&background=random"" /></html>"

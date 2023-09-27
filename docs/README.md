@@ -142,14 +142,19 @@ web!.injectStyle(style!, 0)
 
 sysgui! =  BBjAPI().openSysGui("X0")
 
+declare auto BBjWindow wnd! 
 wnd! = sysgui!.addWindow("BBjDrawer", $01001000$)
 wnd!.setCallback(BBjAPI.ON_CLOSE,"eoj")
 
+declare auto BBjAppLayout app! 
 app! = new BBjAppLayout(wnd!)
 
 rem Header
 rem ==================
+declare auto BBjChildWindow header! 
 header! = app!.getHeader()
+
+declare auto BBjChildWindow toolbar! 
 toolbar! = header!.addChildWindow("", $00108800$, sysgui!.getAvailableContext())
 toolbar!.addStyle("bbj-toolbar")
 toolbar!.addStaticText("<html><bbj-icon-button name='menu-2' data-drawer-toggle></bbj-icon-button></html>")
@@ -157,12 +162,15 @@ toolbar!.addStaticText("<html><h3>DWC Application</h3></html>")
 
 rem Drawer
 rem ==================
+declare auto BBjChildWindow drawer! 
 drawer! = app!.getDrawer()
 drawer!.addStyle("bbj-drawer")
 
+declare auto BBjImageCtrl logo! 
 logo! = drawer!.addImageCtrl("./assets/logo.png")
 logo!.addStyle("bbj-logo")
 
+declare auto BBjTabCtrl drawerMenu! 
 drawerMenu! = drawer!.addTabCtrl()
 drawerMenu!.setCallback(drawerMenu!.ON_TAB_SELECT,"onPageChanged")
 drawerMenu!.setAttribute("nobody","true")
@@ -178,6 +186,7 @@ drawerMenu!.addTab("<bbj-icon name='chart-dots-2'></bbj-icon>   Analytics"    , 
 
 rem Content
 rem ==================
+declare auto BBjChildWindow content! 
 content! = app!.getContent()
 content!.addStaticText("<html><h1>Application Title</h1></html>")
 pageContent! = content!.addStaticText("<html><p>Content for Dashboard goes here</p></html>")
@@ -187,21 +196,22 @@ btn!.setCallback(BBjAPI.ON_BUTTON_PUSH,"toggleDrawer")
 
 rem Welcome Page
 rem ==================
+declare auto BBjDrawer welcomePage!
 welcomePage! = new BBjDrawer(wnd!)
 welcomePage!.setPlacement(BBjDrawer.PLACEMENT_BOTTOM_CENTER)
-welcomePage!.setDrawerSize("90vh")
+welcomePage!.setSize("90vh")
 
-container! = welcomePage!.getContainer()
-container!.addStyle("welcome-page")
-container!.addImageCtrl("./assets/fun.svg")
-container!.addStaticText("<html><h2>Welcome to DWC</h2></html>")
-container!.addStaticText("<html><p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p></html>")
-btn! = container!.addButton("Get Started")
+declare auto BBjChildWindow content! 
+content! = welcomePage!.getContent()
+content!.addStyle("welcome-page")
+content!.addImageCtrl("./assets/fun.svg")
+content!.addStaticText("<html><h2>Welcome to DWC</h2></html>")
+content!.addStaticText("<html><p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p></html>")
+btn! = content!.addButton("Get Started")
 btn!.setCallback(BBjAPI.ON_BUTTON_PUSH,"toggleDrawer")
 btn!.setAttribute("theme","primary")
 btn!.setAttribute("expanse","l")
 
-rem give the drawer sometime to load
 wait 1
 welcomePage!.open()
 
@@ -213,7 +223,6 @@ onPageChanged:
 
   pageContent!.setText("<html><p>Content for " + title$ + " goes here</p></html>")
 return
-
 
 toggleDrawer:
   welcomePage!.toggle()
@@ -282,7 +291,7 @@ onDrawerToggled:
   event! = sysgui!.getLastEvent()
   payload! = event!.getObject()
 
-  let x = MSGBOX("Is Opened = " + str(payload!.isrOpened()), 0, "Drawer Toggled")
+  let x = MSGBOX("Is Opened = " + str(payload!.isOpened()), 0, "Drawer Toggled")
 return 
 ```
   </div>
@@ -333,8 +342,7 @@ style! = "
 :   padding: var(--bbj-space-s);
 :   cursor: var(--bbj-cursor-click);
 :   transition: background-color var(--bbj-transition);
-:   border-bottom: thin solid var(--bbj-color-default);
-:   border-style: solid !important; 
+:   border-bottom: thin solid var(--bbj-color-default) !important;
 : }
 :
 : .bookEntry:hover {
@@ -375,10 +383,12 @@ web!.injectStyle(style!, 0)
 
 sysgui! =  BBjAPI().openSysGui("X0")
 
+declare auto BBjWindow wnd! 
 wnd! = sysgui!.addWindow("BBjDrawer", $01101000$)
 wnd!.addPanelStyle("root")
 wnd!.setCallback(BBjAPI.ON_CLOSE,"eoj")
 
+declare auto BBjButton contactsButton! 
 contactsButton! = wnd!.addButton("Open Contacts Picker")
 contactsButton!.setCallback(BBjAPI.ON_BUTTON_PUSH,"onOpenContactsDrawer")
 contactsButton!.setAttribute("theme", "primary")
@@ -386,12 +396,14 @@ contactsButton!.setAttribute("expanse", "l")
 
 rem Contacts Drawer
 rem ==================
+declare auto BBjDrawer contactsDrawer! 
 contactsDrawer! = new BBjDrawer(wnd!)
 contactsDrawer!.setPlacement(BBjDrawer.PLACEMENT_BOTTOM_CENTER)
-contactsDrawer!.setDrawerSize("70vh")
+contactsDrawer!.setSize("70vh")
 
-container! = contactsDrawer!.getContainer()
-container!.addStyle("contactsList")
+declare auto BBjChildWindow contactsDrawer! 
+content! = contactsDrawer!.getContent()
+content!.addStyle("contactsList")
 
 sql! = new SqlQueryBC(BBjAPI().getJDBCConnection("ChileCompany"))
 items! = sql!.retrieve("SELECT * FROM CUSTOMER")
@@ -407,7 +419,7 @@ while iterator!.hasNext()
   city! = item!.getField("CITY").getString().trim()
   fullLocation! = country! + " - " + city!
 
-  card! = container!.addChildWindow("", $00108800$, sysgui!.getAvailableContext())
+  card! = content!.addChildWindow("", $00108800$, sysgui!.getAvailableContext())
   card!.addStyle("bookEntry")
 
   avatarContent! = "<html><img src=""https://ui-avatars.com/api/?name=" + fullName! + "&&background=random"" /></html>"

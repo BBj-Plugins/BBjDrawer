@@ -1,421 +1,377 @@
-rem package BBjDrawer
-rem /**
-rem  * This file is part of the BBjDrawer plugin.
-rem  * (c) Basis Europe <eu@basis.cloud>
-rem  *
-rem  * For the full copyright and license information, please view the LICENSE
-rem  * file that was distributed with this source code.
-rem  */
-rem /**
-rem  * BBjDrawerEvent
-rem  *
-rem  * @author Hyyan Abo Fakher
-rem  */
-class public BBjDrawerEvent
+REM package BBjDrawer
+REM /**
+REM  * This FILE is part of the BBjDrawer plugin.
+REM  * (c) Basis Europe <eu@basis.cloud>
+REM  *
+REM  * FOR the full copyright AND license information, please view the LICENSE
+REM  * FILE that was distributed with this source code.
+REM  */
+REM /**
+REM  * An event that is fired when the drawer is opened OR closed.
+REM  *
+REM  * @author Hyyan Abo Fakher
+REM  */
+CLASS public BBjDrawerEvent
 
-  field protected BBjDrawer Drawer!
-  field protected BBjNumber Opened!
-  rem /**
-  rem  * Construct a new BBjDrawerEvent
-  rem  *
-  rem  * @param drawer! The instance of the BBjDrawer object
-  rem  * @param opened! The drawer's opened state
-  rem  */
-  method public BBjDrawerEvent(BBjDrawer drawer!, BBjNumber drawerOpened!)
+  FIELD private BBjDrawer Drawer!
+  FIELD private BBjNumber Opened!
+  REM /**
+  REM  * Construct a new BBjDrawerEvent
+  REM  *
+  REM  * @param drawer! The instance of the BBjDrawer object
+  REM  * @param opened! The drawer's opened state
+  REM  */
+  METHOD public BBjDrawerEvent(BBjDrawer drawer!, BBjNumber drawerOpened!)
     #Drawer! = drawer!
     #Opened! = drawerOpened!
-  methodend
-  rem /**
-  rem  * Check if the drawer is opened
-  rem  */
-  method public BBjNumber isOpened()
-    methodret #Opened!
-  methodend
-  rem /**
-  rem  * Get the drawer instance
-  rem  *
-  rem  * @return BBjDrawerEvent
-  rem  */
-  method public BBjDrawer getDrawer()
-    methodret #Drawer!
-  methodend
-  rem /**
-  rem  * Alias for `BBjDrawerEvent.getDrawer()`
-  rem  *
-  rem  * @return BBjDrawerEvent
-  rem  */
-  method public BBjDrawer getControl()
-    methodret #getDrawer()
-  methodend
+  METHODEND
+  REM /**
+  REM  * Check IF the drawer is opened.
+  REM  * 
+  REM  * @return true IF the drawer is opened, false otherwise
+  REM  */
+  METHOD public Boolean isOpened()
+    METHODRET #Opened!
+  METHODEND
+  REM /**
+  REM  * Get the drawer instance.
+  REM  *
+  REM  * @return BBjDrawerEvent
+  REM  */
+  METHOD public BBjDrawer getDrawer()
+    METHODRET #Drawer!
+  METHODEND
+  REM /**
+  REM  * Alias FOR `BBjDrawerEvent.getDrawer()`.
+  REM  *
+  REM  * @return BBjDrawerEvent
+  REM  */
+  METHOD public BBjDrawer getControl()
+    METHODRET #getDrawer()
+  METHODEND
 
-classend
-rem /**
-rem  * A Custom BBj Widget for the DWC to create popover drawers
-rem  *  
-rem  * @author Hyyan Abo Fakher
-rem  */
-class public BBjDrawer
-  rem /**
-  rem  * A constant to place the drawer at left
-  rem  */
-  field public static BBjNumber PLACEMENT_LEFT = 2
-  rem /**
-  rem  * A constant to place the drawer at right
-  rem  */
-  field public static BBjNumber PLACEMENT_RIGHT = 4
-  rem /**
-  rem  * A constant to place the drawer at top
-  rem  */
-  field public static BBjNumber PLACEMENT_TOP = 8
-  rem /**
-  rem  * A constant to place the drawer at top
-  rem  */
-  field public static BBjNumber PLACEMENT_TOP_CENTER = 16
-  rem /**
-  rem  * A constant to place the drawer at top-center
-  rem  */
-  field public static BBjNumber PLACEMENT_BOTTOM = 32
-  rem /**
-  rem  * A constant to place the drawer at bottom-center
-  rem  */
-  field public static BBjNumber PLACEMENT_BOTTOM_CENTER = 64
-  rem /**
-  rem  * A constant to use for the drawer opened event
-  rem  */
-  field public static BBjNumber ON_CLOSED = 128
-  rem /**
-  rem  * A constant to use for the drawer closed event
-  rem  */
-  field public static BBjNumber ON_CLOSED = 256
-  rem /**
-  rem  * A constant to use for the drawer toggled event
-  rem  */
-  field public static BBjNumber ON_TOGGLED = 512
-  rem /**
-  rem  * The app's drawer child window
-  rem  */
-  field public BBjChildWindow Container!
-  field protected BBjString UUID! = java.util.UUID.randomUUID().toString()
-  field protected BBjChildWindow Canvas!
-  field protected BBjHtmlView HTMLView!
-  rem /**
-  rem * Construct a new BBjDrawer
-  rem *
-  rem * @param wnd! the window instance
-  rem */
-  method public BBjDrawer(BBjWindow wnd!)
-    #Canvas! = wnd!.addChildWindow(wnd!.getAvailableControlID(), "", $00108800$, BBjAPI().getSysGui().getAvailableContext())
-    rem setup a hidden HTMLView to handle events and execute scripts
-    content! = "<bbj-drawer data-drawer=""" + #getUUID() + """></bbj-drawer>"
-    #HTMLView! = #Canvas!.addHtmlView(32767, content!)
-    #HTMLView!.setAttribute("data-hv", #getUUID())
-    #HTMLView!.setOpaque(0)
-    #HTMLView!.setNoEdge(1)
-    #HTMLView!.setTabTraversable(0)
-    #HTMLView!.setFocusable(0)
-    #HTMLView!.setCallback(BBjAPI.ON_NATIVE_JAVASCRIPT, #this!, "handleJavascriptEvents")
-    script! = "" +
-:    "(() => {" +
-:    " const container = document.querySelector('[data-hv=""" + #getUUID() + """]');" +
-:    " const drawer = document.querySelector('[data-drawer=""" + #getUUID() + """]');" +
-:    " document.body.appendChild(drawer);" +
-:    " const handler = ev => {" +
-:    "  if(!container || !container.basisDispatchCustomEvent) return;" +
-:    "  if(!ev.target.isSameNode(drawer)) return;" +
-:    "  const detail = drawer.opened;" +
-:    "  container.basisDispatchCustomEvent(container, {type: ev.type, detail});" +
-:    "  container.basisDispatchCustomEvent(container, {type:'bbj-drawer-toggled', detail});" +
-:    " };" +
-:    " drawer.addEventListener('bbj-drawer-opened', handler);"+
-:    " drawer.addEventListener('bbj-drawer-closed', handler);"+
-:    "})()"
-    #HTMLView!.executeAsyncScript(script!)
-    #setContainer(#Canvas!.addChildWindow(32766, "", $00108810$, BBjAPI().getSysGui().getAvailableContext()))
-  methodend
-  rem /**
-  rem  * Get the unique auto generated id of the component.
-  rem  *
-  rem  * @return BBjString
-  rem  */
-  method public BBjString getUUID()
-    methodret #UUID!
-  methodend
-  rem /**
-  rem  * Get the canvas's id
-  rem  *
-  rem  * @return BBjNumber
-  rem  */
-  method public BBjNumber getID()
-    methodret #getCanvas().getID()
-  methodend
-  rem /**
-  rem  * Get the instance of the component's Canvas
-  rem  *
-  rem  * @return The canvas's instance
-  rem  */
-  method public BBjChildWindow getCanvas()
-    methodret #Canvas!
-  methodend
-  rem /**
-  rem  * Set the drawer child window
-  rem *
-  rem * @param container! the drawer container instance
-  rem */
-  method public void setContainer(BBjChildWindow container!)
-    #Container! = container!
-    #Container!.setAttribute("data-drawer-window", #getUUID())
-    script! = "" +
-:    "(() => {" +
-:    " const drawer = document.querySelector('[data-drawer=""" + #getUUID() + """]');" +
-:    " const drawerWindow = document.querySelector('[data-drawer-window=""" + #getUUID() + """]');" +
-:    " drawer.appendChild(drawerWindow);" +
-:    "})();"
-    #getHTMLView().executeAsyncScript(script!)
-  methodend
-  rem /**
-  rem  * Set the drawer size
-  rem  */
-  method public void setDrawerMaxWidth(BBjString size!)
-    script! = "" +
-:    "(() => {" +
-:    " const drawer = document.querySelector('[data-drawer=""" + #getUUID() + """]');" +
-:    " drawer.style.setProperty('--bbj-drawer-max-width', '" + str(size!) + "');" +
-:    "})();"
-    #getHTMLView().executeAsyncScript(script!)
-  methodend
-  rem /**
-  rem  * Set the drawer size
-  rem  */
-  method public BBjString getDrawerMaxWidth(BBjString size!)
-    script! = "" +
-:    "(() => {" +
-:    " const drawer = document.querySelector('[data-drawer=""" + #getUUID() + """]');" +
-:    " drawer.style.getPropertyValue('--bbj-drawer-max-width', '" + str(size!) + "');" +
-:    "})();"
-    #getHTMLView().executeAsyncScript(script!)
-  methodend
-  rem /**
-  rem  * Set the drawer size.
-  rem  *  - If the drawer is placed at left or right, the size will be the width
-  rem  *  - If the drawer is placed at top or bottom, the size will be the height
-  rem  */
-  method public void setDrawerSize(BBjString size!)
-    #setAttribute("size", str(size!))
-  methodend
-  rem /**
-  rem  * Get the drawer size
-  rem  *
-  rem  * @return The drawer size
-  rem  */
-  method public BBjString getDrawerSize(BBjString size!)
-    methodret #setAttribute("size", str(size!))
-  methodend
-  rem /**
-  rem  * Set the max drawer size
-  rem  *  - If the drawer is placed at left or right, the size will be the max width
-  rem  *  - If the drawer is placed at top or bottom, the size will be the max height
-  rem  */
-  method public void setDrawerMaxSize(BBjString size!)
-    #setAttribute("max-size", str(size!))
-  methodend
-  rem /**
-  rem  * Get the max drawer size
-  rem  *
-  rem  * @return The max drawer size
-  rem  */
-  method public BBjString getDrawerMaxSize(BBjString size!)
-    methodret #setAttribute("max-size", str(size!))
-  methodend
-  rem /**
-  rem  * Open the drawer
-  rem  */
-  method public void open()
-    #getContainer().setVisible(BBjAPI.TRUE , err=*next)
-    #setAttribute("opened", "true")
-  methodend
-  rem /**
-  rem  * Close the drawer
-  rem  */
-  method public void close()
-    #setAttribute("opened", "false")
-  methodend
-  rem /**
-  rem  * Toggle the drawer
-  rem  */
-  method public void toggle()
-    script! = "" +
-:    "(() => {" +
-:    " const drawer = document.querySelector('[data-drawer=""" + #getUUID() + """]');" +
-:    " drawer.opened = typeof drawer.opened === 'undefined' ? false : !drawer.opened;" +
-:    "})();"
-    #getHTMLView().executeAsyncScript(script!)
-  methodend
-  rem /**
-  rem  * Check if the drawer is opened
-  rem  *
-  rem  * @returns true if the drawer is opened, false otherwise
-  rem  */
-  method public BBjNumber isOpened()
-    script! = "" +
-:    "(() => {" +
-:    " const drawer = document.querySelector('[data-drawer=""" + #getUUID() + """]');" +
-:    " return typeof drawer.opened === 'undefined' ? true: drawer.opened" +
-:    "})()"
-    methodret num(#getHTMLView().executeScript(script!))
-  methodend
-  rem /**
-  rem  * Set the drawer position
-  rem  *
-  rem  * @param placement! the position of the drawer
-  rem  *
-  rem  * @see BBjDrawer.PLACEMENT_LEFT
-  rem  * @see BBjDrawer.PLACEMENT_RIGHT
-  rem  * @see BBjDrawer.PLACEMENT_TOP
-  rem  * @see BBjDrawer.PLACEMENT_TOP_CENTER
-  rem  * @see BBjDrawer.PLACEMENT_BOTTOM
-  rem  * @see BBjDrawer.PLACEMENT_BOTTOM_CENTER
-  rem  */
-  method public void setPlacement(BBjNumber placement!)
-    switch placement!
-      case BBjDrawer.PLACEMENT_LEFT
-        #setAttribute("placement", "left")
-        break
-      case BBjDrawer.PLACEMENT_RIGHT
-        #setAttribute("placement", "right")
-        break
-      case BBjDrawer.PLACEMENT_TOP
-        #setAttribute("placement", "top")
-        break
-      case BBjDrawer.PLACEMENT_TOP_CENTER
-        #setAttribute("placement", "top-center")
-        break
-      case BBjDrawer.PLACEMENT_BOTTOM
-        #setAttribute("placement", "bottom")
-        break
-      case BBjDrawer.PLACEMENT_BOTTOM_CENTER
-        #setAttribute("placement", "bottom-center")
-        break
-      case default
-        break
-    swend
-  methodend
-  rem /**
-  rem  * Get the drawer placement
-  rem  *
-  rem  * @return The drawer placement
-  rem  *
-  rem  * @see BBjDrawer.PLACEMENT_LEFT
-  rem  * @see BBjDrawer.PLACEMENT_RIGHT
-  rem  * @see BBjDrawer.PLACEMENT_TOP
-  rem  * @see BBjDrawer.PLACEMENT_TOP_CENTER
-  rem  * @see BBjDrawer.PLACEMENT_BOTTOM
-  rem  * @see BBjDrawer.PLACEMENT_BOTTOM_CENTER
-  rem  */
-  method public BBjNumber getPlacement()
-    placement! = #getAttribute("placement")
-    switch placement!
-      case "left"
-        methodret BBjDrawer.PLACEMENT_LEFT
-        break
-      case "right"
-        methodret BBjDrawer.PLACEMENT_RIGHT
-        break
-      case "top"
-        methodret BBjDrawer.PLACEMENT_TOP
-        break
-      case "top-center"
-        methodret BBjDrawer.PLACEMENT_TOP_CENTER
-        break
-      case "bottom"
-        methodret BBjDrawer.PLACEMENT_BOTTOM
-        break
-      case "bottom-center"
-        methodret BBjDrawer.PLACEMENT_BOTTOM_CENTER
-        break
-      case default
-        methodret BBjDrawer.PLACEMENT_LEFT
-        break
-  methodend
-  rem /**
-  rem  * Set a widget attribute
-  rem  *
-  rem  * @param key! The attribute's name
-  rem  * @param value! The attribute's value
-  rem  */
-  method public void setAttribute(BBjString key!, BBjString value!)
-    script! = "" +
-:    "(() => {" +
-:    " const drawer = document.querySelector('[data-drawer=""" + #getUUID() + """]');" +
-:    " drawer.setAttribute('" + str(key!) + "','" + str(value!) + "');" +
-:    "})()"
-    #getHTMLView().executeAsyncScript(script!)
-  methodend
-  rem /**
-  rem  * Get a widget attribute
-  rem  *
-  rem  * @param key! The attribute's name
-  rem  */
-  method public BBjString getAttribute(BBjString key!)
-    script! = "" +
-:    "(() => {" +
-:    " const drawer = document.querySelector('[data-drawer=""" + #getUUID() + """]');" +
-:    " return drawer.getAttribute('" + str(key!) + "');" +
-:    "})()"
-    methodret str(#getHTMLView().executeScript(script!))
-  methodend
-  rem /**
-  rem  * Set an app layout event listener
-  rem  *
-  rem  * @param event! The event
-  rem  * @param callback! The event callback
-  rem  */
-  method public void setCallback(BBjNumber event!, String callback!)
+CLASSEND
+REM /**
+REM  * A Custom BBj Widget FOR the DWC to create popover drawers
+REM  *
+REM  * @author Hyyan Abo Fakher
+REM  */
+CLASS public BBjDrawer
+  REM /**
+  REM  * A constant to place the drawer at left
+  REM  */
+  FIELD public static BBjNumber PLACEMENT_LEFT = 2
+  REM /**
+  REM  * A constant to place the drawer at right
+  REM  */
+  FIELD public static BBjNumber PLACEMENT_RIGHT = 4
+  REM /**
+  REM  * A constant to place the drawer at top
+  REM  */
+  FIELD public static BBjNumber PLACEMENT_TOP = 8
+  REM /**
+  REM  * A constant to place the drawer at top
+  REM  */
+  FIELD public static BBjNumber PLACEMENT_TOP_CENTER = 16
+  REM /**
+  REM  * A constant to place the drawer at top-center
+  REM  */
+  FIELD public static BBjNumber PLACEMENT_BOTTOM = 32
+  REM /**
+  REM  * A constant to place the drawer at bottom-center
+  REM  */
+  FIELD public static BBjNumber PLACEMENT_BOTTOM_CENTER = 64
+  REM /**
+  REM  * A constant to USE FOR the drawer opened event
+  REM  */
+  FIELD public static BBjNumber ON_OPENED = 128
+  REM /**
+  REM  * A constant to USE FOR the drawer closed event
+  REM  */
+  FIELD public static BBjNumber ON_CLOSED = 256
+  REM /**
+  REM  * A constant to USE FOR the drawer toggled event
+  REM  */
+  FIELD public static BBjNumber ON_TOGGLED = 512
+  REM /**
+  REM  * The drawer's content
+  REM  */
+  FIELD public BBjControl Content!
+  REM /**
+  REM  * The drawer's Size
+  REM  */
+  FIELD public BBjString Size! = "16em"
+  REM /**
+  REM  * The drawer's maximal size
+  REM  */
+  FIELD public BBjString MaxSize! = null()
+  REM /**
+  REM  * The drawer's maximal Size
+  REM  */
+  FIELD public BBjString MaxWidth! = "100%"
+  REM /**
+  REM  * The drawer's placement
+  REM  */
+  FIELD public BBjNumber Placement! = BBjDrawer.PLACEMENT_LEFT
+  FIELD private BBjWebComponent WebComponent!
+  FIELD private BBjWindow Window!
+  REM /**
+  REM * Construct a new BBjDrawer.
+  REM *
+  REM * @param wnd! the window instance
+  REM */
+  METHOD public BBjDrawer(BBjWindow wnd!)
+    #Window! = wnd!
+    #WebComponent! = wnd!.addWebComponent("bbj-drawer")
+    #WebComponent!.executeAsyncScript("document.body.appendChild(component);")
+    #WebComponent!.setStyle("width","")
+    #WebComponent!.setStyle("height","")
+    #WebComponent!.setStyle("position","")
+    #WebComponent!.setTabTraversable(0)
+    #WebComponent!.setFocusable(0)
+    handler! = new BBjDrawerEventHandler(#this!)
+
+    DECLARE AUTO BBjWebEventOptions toggleOptions!
+
+    toggleOptions! = #WebComponent!.newEventOptions()
+    #WebComponent!.setCallback("bbj-drawer-opened", handler!, "handleClientEvents", toggleOptions!)
+    #WebComponent!.setCallback("bbj-drawer-closed", handler!, "handleClientEvents", toggleOptions!)
+  METHODEND
+  REM /**
+  REM  * Get the canvas's id.
+  REM  *
+  REM  * @return BBjNumber
+  REM  */
+  METHOD public BBjNumber getID()
+    METHODRET #getWebComponent().getID()
+  METHODEND
+  REM /**
+  REM  * Set the drawer content.
+  REM  *
+  REM  * @param control! the control to set as content
+  REM  */
+  METHOD public void setContent(BBjControl control!)
+    IF(control! = null())
+      THROW "The control cannot be null", 256
+    FI
+
+    IF(control!.isDestroyed())
+      THROW "The passed control is destroyed", 256
+    FI
+
+    #Content! = control!
+    #getWebComponent().setSlot(#Content!)
+  METHODEND
+  REM /**
+  REM  * Get the drawer content.
+  REM  *
+  REM  * IF the content is not set, the METHOD will create a new BBjChildWindow AND set it as content.
+  REM  *
+  REM  * @return BBjControl
+  REM  */
+  METHOD public BBjControl getContent()
+    IF(#Content! = null())
+      #setContent(#Window!.addChildWindow(#Window!.getAvailableControlID(), "", $00108810$, BBjAPI().getSysGui().getAvailableContext()))
+    FI
+
+    METHODRET #Content!
+  METHODEND
+  REM /**
+  REM  * Set the drawer size.
+  REM  *
+  REM  * @param maxWidth! the drawer's max width
+  REM  */
+  METHOD public void setMaxWidth(BBjString maxWidth!)
+    #MaxWidth! = maxWidth!
+    #getWebComponent().setStyle("--bbj-drawer-max-width", maxWidth!)
+  METHODEND
+  REM /**
+  REM  * Set the drawer size.
+  REM  *
+  REM  * The drawer size. Width in CASE placement is left
+  REM  * OR right OR height in CASE placement is top OR bottom.
+  REM  *
+  REM  * @param size! the drawer's size
+  REM  */
+  METHOD public void setSize(BBjString size!)
+    #Size! = size!
+    #getWebComponent().putClientProperty("size", size!)
+  METHODEND
+  REM /**
+  REM  * Set the max drawer size.
+  REM  *
+  REM  * The drawer's max width. Max width in CASE placement is left
+  REM  * OR right OR max height in CASE placement is top OR bottom.
+  REM  *
+  REM  * @param size! the drawer's max size
+  REM  */
+  METHOD public void setMaxSize(BBjString maxSize!)
+    #MaxSize! = maxSize!
+    #getWebComponent().putClientProperty("maxSize", maxSize!)
+  METHODEND
+  REM /**
+  REM  * OPEN the drawer.
+  REM  */
+  METHOD public void open()
+    #getContent().setVisible(BBjAPI.TRUE , err=*next)
+    #getWebComponent().putClientProperty("opened", "true")
+  METHODEND
+  REM /**
+  REM  * CLOSE the drawer.
+  REM  */
+  METHOD public void close()
+    #getWebComponent().putClientProperty("opened", "false")
+  METHODEND
+  REM /**
+  REM  * Toggle the drawer
+  REM  */
+  METHOD public void toggle()
+    #getWebComponent().putClientProperty("opened", iff(#isOpened() = BBjAPI.TRUE, "false", "true"))
+  METHODEND
+  REM /**
+  REM  * Check IF the drawer is opened.
+  REM  *
+  REM  * @returns true IF the drawer is opened, false otherwise
+  REM  */
+  METHOD public Boolean isOpened()
+    METHODRET cast(Boolean, #getWebComponent().getClientProperty("opened"))
+  METHODEND
+  REM /**
+  REM  * Set the drawer position.
+  REM  *
+  REM  * @param placement! the position of the drawer
+  REM  *
+  REM  * @see BBjDrawer.PLACEMENT_LEFT
+  REM  * @see BBjDrawer.PLACEMENT_RIGHT
+  REM  * @see BBjDrawer.PLACEMENT_TOP
+  REM  * @see BBjDrawer.PLACEMENT_TOP_CENTER
+  REM  * @see BBjDrawer.PLACEMENT_BOTTOM
+  REM  * @see BBjDrawer.PLACEMENT_BOTTOM_CENTER
+  REM  */
+  METHOD public void setPlacement(BBjNumber placement!)
+    #Placement! = placement!
+    property! = null()
+    SWITCH placement!
+      CASE BBjDrawer.PLACEMENT_LEFT
+        property! = "left"
+        BREAK
+      CASE BBjDrawer.PLACEMENT_RIGHT
+        property! = "right"
+        BREAK
+      CASE BBjDrawer.PLACEMENT_TOP
+        property! = "top"
+        BREAK
+      CASE BBjDrawer.PLACEMENT_TOP_CENTER
+        property! = "top-center"
+        BREAK
+      CASE BBjDrawer.PLACEMENT_BOTTOM
+        property! = "bottom"
+        BREAK
+      CASE BBjDrawer.PLACEMENT_BOTTOM_CENTER
+        property! = "bottom-center"
+        BREAK
+      CASE default
+        property! = "left"
+        BREAK
+    SWEND
+
+    #getWebComponent().putClientProperty("placement", property!)
+  METHODEND
+  REM /**
+  REM  * Set a widget attribute.
+  REM  *
+  REM  * @param key! The attribute's name
+  REM  * @param value! The attribute's value
+  REM  */
+  METHOD public void setAttribute(BBjString key!, BBjString value!)
+    #getWebComponent().setAttribute(key!, value!)
+  METHODEND
+  REM /**
+  REM  * Get a widget attribute.
+  REM  *
+  REM  * @param key! The attribute's name
+  REM  */
+  METHOD public BBjString getAttribute(BBjString key!)
+    METHODRET #getWebComponent().getAttribute(key!)
+  METHODEND
+  REM /**
+  REM  * Add a css CLASS to the widget.
+  REM  *
+  REM  * @param class! The css CLASS to add
+  REM  */
+  METHOD public void addClass(BBjString class!)
+    #getWebComponent().addClass(class!)
+  METHODEND
+  REM /**
+  REM  * REMOVE a css CLASS to the widget.
+  REM  *
+  REM  * @param class! The css CLASS to add
+  REM  */
+  METHOD public void removeClass(BBjString class!)
+    #getWebComponent().removeClass(class!)
+  METHODEND
+  REM /**
+  REM  * Set an event listener.
+  REM  *
+  REM  * @param event! The event
+  REM  * @param callback! The event CALLBACK
+  REM  */
+  METHOD public void setCallback(BBjNumber event!, BBjString callback!)
     BBjAPI().setCustomEventCallback(str(#this!) + str(event!), callback!)
-  methodend
-  rem /**
-  rem  * Set an app layout event listener
-  rem  *
-  rem  * @param event! The event
-  rem  * @param callback! A class instance
-  rem  * @param callback! The event method
-  rem  */
-  method public void setCallback(BBjNumber event!, CustomObject instance!, String method!)
+  METHODEND
+  REM /**
+  REM  * Set an event listener.
+  REM  *
+  REM  * @param event! The event
+  REM  * @param callback! A CLASS instance
+  REM  * @param callback! The event METHOD
+  REM  */
+  METHOD public void setCallback(BBjNumber event!, CustomObject instance!, BBjString method!)
     BBjAPI().setCustomEventCallback(str(#this!) + str(event!), instance!, method!)
-  methodend
-  rem /**
-  rem  * Clear an event callback
-  rem  *
-  rem  * @param event! The event
-  rem  */
-  method public void clearCallback(BBjNumber event!)
+  METHODEND
+  REM /**
+  REM  * CLEAR an event CALLBACK
+  REM  *
+  REM  * @param event! The event
+  REM  */
+  METHOD public void clearCallback(BBjNumber event!)
     BBjAPI().clearCustomEventCallback(str(#this!) + str(event!))
-  methodend
-  rem /**
-  rem  * Handle the client events.
-  rem  *
-  rem  * <b>IMPORTANT</b> This method is not meant to be part of the public API of the control
-  rem  * @param ev! The Javascript event
-  rem  *
-  rem  * @ignore
-  rem  */
-  method public void handleJavascriptEvents(BBjNativeJavaScriptEvent ev!)
-    map! = ev!.getEventMap()
-    type$ = str(map!.get("type"))
-    detail$ = str(map!.get("detail"))
-    payload! = new BBjDrawerEvent(#this!, iff(detail$ = "true", 1, 0))
-    switch type$
-      case "bbj-drawer-opened"
-        BBjAPI().postPriorityCustomEvent(str(#this!) + str(BBjDrawer.ON_CLOSED), payload!)
-        break
-      case "bbj-drawer-closed"
-        BBjAPI().postPriorityCustomEvent(str(#this!) + str(BBjDrawer.ON_CLOSED), payload!)
-        break
-      case "bbj-drawer-toggled"
-        BBjAPI().postPriorityCustomEvent(str(#this!) + str(BBjDrawer.ON_TOGGLED), payload!)
-        break
-      case default
-        break
-    swend
-  methodend
+  METHODEND
 
-classend
+CLASSEND
+REM /**
+REM  * A CLASS which is used to handle the toast client events.
+REM  *
+REM  * @author Hyyan Abo Fakher
+REM  */
+CLASS public BBjDrawerEventHandler
+
+  FIELD private BBjDrawer Drawer!
+
+  METHOD public BBjDrawerEventHandler(BBjDrawer drawer!)
+    #Drawer! = drawer!
+  METHODEND
+  REM /**
+  REM  * Handle the toast client events.
+  REM  *
+  REM  * @param ev! The event
+  REM  */
+  METHOD public void handleClientEvents(BBjWebEvent ev!)
+    type$ = ev!.getEventType()
+    map! = ev!.getEventMap()
+    payload! = new BBjDrawerEvent(#Drawer!, iff(type$ = "bbj-drawer-opened", BBjAPI.TRUE, BBjAPI.FALSE))
+    SWITCH type$
+      CASE "bbj-drawer-opened"
+        BBjAPI().postPriorityCustomEvent(str(#Drawer!) + str(BBjDrawer.ON_OPENED), payload!)
+        BREAK
+      CASE "bbj-drawer-closed"
+        BBjAPI().postPriorityCustomEvent(str(#Drawer!) + str(BBjDrawer.ON_CLOSED), payload!)
+        BREAK
+      CASE DEFAULT
+        BREAK
+    SWEND
+
+    BBjAPI().postPriorityCustomEvent(str(#Drawer!) + str(BBjDrawer.ON_TOGGLED), payload!)
+  METHODEND
+
+CLASSEND
