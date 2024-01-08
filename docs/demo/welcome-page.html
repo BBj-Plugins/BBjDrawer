@@ -22,6 +22,14 @@
         padding: 0;
       }
 
+      bbj-drawer {
+        --bbj-drawer-size: 90vh;
+      }
+
+      bbj-drawer::part(header) {
+        display: none;
+      }
+
       .bbj-logo {
         display: flex;
         align-items: center;
@@ -116,7 +124,7 @@
         <p>Content goes here</p>
         <bbj-button class="toggle-drawer">Open Welcome Page</bbj-button>
       </bbj-app-layout>
-      <bbj-drawer placement="bottom-center" size="90vh" opened>
+      <bbj-drawer placement="bottom-center" opened>
         <div class="welcome-page">
           <img src="./assets/fun.svg" />
           <h2>Welcome to DWC</h2>
