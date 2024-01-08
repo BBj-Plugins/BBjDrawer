@@ -1,11 +1,15 @@
 style! = "
 : body,html {overflow: hidden}
-:
+: h3 {margin: var(--bbj-space-m) 0}
 : .bbj-toolbar {
 :    display: flex;
 :    align-items: center;
 :    gap: var(--bbj-space-m);
 :    padding: 0 var(--bbj-space-m);
+: }
+:
+: bbj-drawer::part(header){
+:   display: none;
 : }
 :
 : .bbj-logo {

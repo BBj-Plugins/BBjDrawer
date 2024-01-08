@@ -100,6 +100,10 @@ CLASS public BBjDrawer
   REM /**
   REM  * The drawer's Size
   REM  */
+  FIELD public BBjString Label! = "Drawer"  
+  REM /**
+  REM  * The drawer's Size
+  REM  */
   FIELD public BBjString Size! = "16em"
   REM /**
   REM  * The drawer's maximal size
@@ -186,6 +190,16 @@ CLASS public BBjDrawer
     #getWebComponent().setStyle("--bbj-drawer-max-width", maxWidth!)
   METHODEND
   REM /**
+  REM  * Set the drawer label.
+  REM  *
+  REM  * @param label! the drawer's label
+  REM  */
+  METHOD public void setLabel(BBjString label!)
+    #Label! = label!
+    #getWebComponent().setAttribute("label", label!)
+  METHODEND
+
+  REM /**
   REM  * Set the drawer size.
   REM  *
   REM  * The drawer size. Width in CASE placement is left
@@ -195,7 +209,7 @@ CLASS public BBjDrawer
   REM  */
   METHOD public void setSize(BBjString size!)
     #Size! = size!
-    #getWebComponent().putClientProperty("size", size!)
+    #getWebComponent().setStyle("--bbj-drawer-size", size!)
   METHODEND
   REM /**
   REM  * Set the max drawer size.
@@ -207,7 +221,7 @@ CLASS public BBjDrawer
   REM  */
   METHOD public void setMaxSize(BBjString maxSize!)
     #MaxSize! = maxSize!
-    #getWebComponent().putClientProperty("maxSize", maxSize!)
+    #getWebComponent().setStyle("--bbj-drawer-max-size", maxSize!)
   METHODEND
   REM /**
   REM  * OPEN the drawer.

@@ -11,6 +11,10 @@ style! = "
 :   padding: var(--bbj-space-m);
 : }
 :
+: bbj-drawer::part(footer){
+:   display: none;
+: }
+:
 : .bookEntry {
 :   display: flex;
 :   gap: 1rem;
@@ -74,6 +78,7 @@ rem Contacts Drawer
 rem ==================
 declare auto BBjDrawer contactsDrawer! 
 contactsDrawer! = new BBjDrawer(wnd!)
+contactsDrawer!.setLabel("Contacts")
 contactsDrawer!.setPlacement(BBjDrawer.PLACEMENT_BOTTOM_CENTER)
 contactsDrawer!.setSize("70vh")
 
