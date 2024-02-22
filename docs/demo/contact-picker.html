@@ -6,10 +6,10 @@
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, viewport-fit=cover, user-scalable=no" />
   <title>BBjDrawer - Welcome Page</title>
-  <script type="module" src="//s3-eu-west-1.amazonaws.com/cdn.bbx.kitchen/next/bbj-ui.esm.js"></script>
-  <script nomodule src="//s3-eu-west-1.amazonaws.com/cdn.bbx.kitchen/next/bbj-ui.js"></script>
+  <script type="module" src="//s3-eu-west-1.amazonaws.com/cdn.bbx.kitchen/next/dwc-ui.esm.js"></script>
+  <script nomodule src="//s3-eu-west-1.amazonaws.com/cdn.bbx.kitchen/next/dwc-ui.js"></script>
 
-  <link rel="stylesheet" href="//s3-eu-west-1.amazonaws.com/cdn.bbx.kitchen/next/bbj-ui.css" />
+  <link rel="stylesheet" href="//s3-eu-west-1.amazonaws.com/cdn.bbx.kitchen/next/dwc-ui.css" />
   <style>
     html,
     body {
@@ -24,14 +24,14 @@
     }
 
     .contactsList {
-      padding: var(--bbj-space-m);
+      padding: var(--dwc-space-m);
     }
 
-    bbj-drawer {
-      --bbj-drawer-size: 70vh;
+    dwc-drawer {
+      --dwc-drawer-size: 70vh;
     }
 
-    bbj-drawer::part(footer) {
+    dwc-drawer::part(footer) {
       display: none;
     }
 
@@ -39,22 +39,22 @@
       display: flex;
       gap: 1rem;
       align-items: center;
-      padding: var(--bbj-space-s);
-      cursor: var(--bbj-cursor-click);
-      transition: background-color var(--bbj-transition);
-      border-bottom: thin solid var(--bbj-color-default);
+      padding: var(--dwc-space-s);
+      cursor: var(--dwc-cursor-click);
+      transition: background-color var(--dwc-transition);
+      border-bottom: thin solid var(--dwc-color-default);
     }
 
     .bookEntry:hover {
-      background-color: var(--bbj-color-primary-alt);
+      background-color: var(--dwc-color-primary-alt);
     }
 
     .bookEntry__avatar {
       display: flex;
       align-items: center;
-      width: var(--bbj-size-l);
-      height: var(--bbj-size-l);
-      border-radius: var(--bbj-border-radius-round);
+      width: var(--dwc-size-l);
+      height: var(--dwc-size-l);
+      border-radius: var(--dwc-border-radius-round);
       overflow: hidden;
     }
 
@@ -70,23 +70,23 @@
     }
 
     .bookEntry__location {
-      font-size: var(--bbj-font-size-s);
-      color: var(--bbj-color-default-text);
+      font-size: var(--dwc-font-size-s);
+      color: var(--dwc-color-default-text);
     }
   </style>
 </head>
 
 <body>
-  <bbj-button theme="primary" expanse="l" class="toggle-drawer">Open Contacts Picker</bbj-button>
-  <bbj-drawer placement="bottom-center" size="70vh" opened label="Contacts">
+  <dwc-button theme="primary" expanse="l" class="toggle-drawer">Open Contacts Picker</dwc-button>
+  <dwc-drawer placement="bottom-center" size="70vh" opened label="Contacts">
     <div class="contactsList"></div>
-  </bbj-drawer>
+  </dwc-drawer>
 
   <script>
     const toggleDrawerButton = document.querySelectorAll(".toggle-drawer");
     toggleDrawerButton.forEach((button) => {
       button.addEventListener("click", () => {
-        const drawer = document.querySelector("bbj-drawer");
+        const drawer = document.querySelector("dwc-drawer");
         drawer.opened = !drawer.opened;
       });
     });
@@ -114,9 +114,9 @@
                 <div class="bookEntry__name">${fullName}</div>
                 <div class="bookEntry__phone">${fullLocation}</div>
               </div>
-              <bbj-button data-phone=${phone}>
-                  <bbj-icon name="phone"></bbj-icon>
-              </bbj-button>
+              <dwc-button data-phone=${phone}>
+                  <dwc-icon name="phone"></dwc-icon>
+              </dwc-button>
             </div>
           `;
           contactsList.appendChild(contactElement);

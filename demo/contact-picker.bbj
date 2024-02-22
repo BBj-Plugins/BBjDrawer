@@ -8,10 +8,10 @@ style! = "
 : }
 :  
 : .contactsList {
-:   padding: var(--bbj-space-m);
+:   padding: var(--dwc-space-m);
 : }
 :
-: bbj-drawer::part(footer){
+: dwc-drawer::part(footer){
 :   display: none;
 : }
 :
@@ -19,22 +19,22 @@ style! = "
 :   display: flex;
 :   gap: 1rem;
 :   align-items: center;
-:   padding: var(--bbj-space-s);
-:   cursor: var(--bbj-cursor-click);
-:   transition: background-color var(--bbj-transition);
-:   border-bottom: thin solid var(--bbj-color-default) !important;
+:   padding: var(--dwc-space-s);
+:   cursor: var(--dwc-cursor-click);
+:   transition: background-color var(--dwc-transition);
+:   border-bottom: thin solid var(--dwc-color-default) !important;
 : }
 :
 : .bookEntry:hover {
-:   background-color: var(--bbj-color-primary-alt);
+:   background-color: var(--dwc-color-primary-alt);
 : }
 :
 : .bookEntry__avatar {
 :   display: flex;
 :   align-items: center;
-:   width: var(--bbj-size-l);
-:   height: var(--bbj-size-l);
-:   border-radius: var(--bbj-border-radius-round);
+:   width: var(--dwc-size-l);
+:   height: var(--dwc-size-l);
+:   border-radius: var(--dwc-border-radius-round);
 : }
 :
 : .bookEntry__avatar img {
@@ -49,8 +49,8 @@ style! = "
 : }
 :
 : .bookEntry__location {
-:   font-size: var(--bbj-font-size-s);
-:   color: var(--bbj-color-default-text);
+:   font-size: var(--dwc-font-size-s);
+:   color: var(--dwc-color-default-text);
 : }  
 :"
 
@@ -116,7 +116,7 @@ while iterator!.hasNext()
   location! = info!.addStaticText(fullLocation!)
   location!.addStyle("bookEntry__location")
 
-  call! = card!.addButton("<html><bbj-icon name=""phone""></bbj-icon></html>")
+  call! = card!.addButton("<html><dwc-icon name=""phone""></dwc-icon></html>")
   call!.setEnabled(len(phone!) > 0)
   call!.setUserData(phone!)
   call!.setCallback(call!.ON_BUTTON_PUSH, "onCall")
