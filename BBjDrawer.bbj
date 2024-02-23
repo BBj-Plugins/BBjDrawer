@@ -126,7 +126,7 @@ CLASS public BBjDrawer
   REM */
   METHOD public BBjDrawer(BBjWindow wnd!)
     #Window! = wnd!
-    #WebComponent! = wnd!.addWebComponent("bbj-drawer")
+    #WebComponent! = wnd!.addWebComponent("dwc-drawer")
     #WebComponent!.executeAsyncScript("document.body.appendChild(component);")
     #WebComponent!.setStyle("width","")
     #WebComponent!.setStyle("height","")
@@ -138,8 +138,8 @@ CLASS public BBjDrawer
     DECLARE AUTO BBjWebEventOptions toggleOptions!
 
     toggleOptions! = #WebComponent!.newEventOptions()
-    #WebComponent!.setCallback("bbj-drawer-opened", handler!, "handleClientEvents", toggleOptions!)
-    #WebComponent!.setCallback("bbj-drawer-closed", handler!, "handleClientEvents", toggleOptions!)
+    #WebComponent!.setCallback("dwc-drawer-opened", handler!, "handleClientEvents", toggleOptions!)
+    #WebComponent!.setCallback("dwc-drawer-closed", handler!, "handleClientEvents", toggleOptions!)
   METHODEND
   REM /**
   REM  * Get the canvas's id.
@@ -187,7 +187,7 @@ CLASS public BBjDrawer
   REM  */
   METHOD public void setMaxWidth(BBjString maxWidth!)
     #MaxWidth! = maxWidth!
-    #getWebComponent().setStyle("--bbj-drawer-max-width", maxWidth!)
+    #getWebComponent().setStyle("--dwc-drawer-max-width", maxWidth!)
   METHODEND
   REM /**
   REM  * Set the drawer label.
@@ -209,7 +209,7 @@ CLASS public BBjDrawer
   REM  */
   METHOD public void setSize(BBjString size!)
     #Size! = size!
-    #getWebComponent().setStyle("--bbj-drawer-size", size!)
+    #getWebComponent().setStyle("--dwc-drawer-size", size!)
   METHODEND
   REM /**
   REM  * Set the max drawer size.
@@ -221,7 +221,7 @@ CLASS public BBjDrawer
   REM  */
   METHOD public void setMaxSize(BBjString maxSize!)
     #MaxSize! = maxSize!
-    #getWebComponent().setStyle("--bbj-drawer-max-size", maxSize!)
+    #getWebComponent().setStyle("--dwc-drawer-max-size", maxSize!)
   METHODEND
   REM /**
   REM  * OPEN the drawer.
@@ -373,12 +373,12 @@ CLASS public BBjDrawerEventHandler
   METHOD public void handleClientEvents(BBjWebEvent ev!)
     type$ = ev!.getEventType()
     map! = ev!.getEventMap()
-    payload! = new BBjDrawerEvent(#Drawer!, iff(type$ = "bbj-drawer-opened", BBjAPI.TRUE, BBjAPI.FALSE))
+    payload! = new BBjDrawerEvent(#Drawer!, iff(type$ = "dwc-drawer-opened", BBjAPI.TRUE, BBjAPI.FALSE))
     SWITCH type$
-      CASE "bbj-drawer-opened"
+      CASE "dwc-drawer-opened"
         BBjAPI().postPriorityCustomEvent(str(#Drawer!) + str(BBjDrawer.ON_OPENED), payload!)
         BREAK
-      CASE "bbj-drawer-closed"
+      CASE "dwc-drawer-closed"
         BBjAPI().postPriorityCustomEvent(str(#Drawer!) + str(BBjDrawer.ON_CLOSED), payload!)
         BREAK
       CASE DEFAULT

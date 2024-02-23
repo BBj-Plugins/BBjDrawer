@@ -10,8 +10,8 @@
   <a href="https://github.com/necolas/issue-guidelines/blob/master/CONTRIBUTING.md#pull-requests">
     <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs welcome!" />
   </a>
-   <a href="https://basishub.github.io/basis-next/#/dwc/bbj-drawer">
-    <img src="https://img.shields.io/badge/Component-bbj--drawer-%23006aff" alt="Tag Name">
+   <a href="https://basishub.github.io/basis-next/#/dwc/dwc-drawer">
+    <img src="https://img.shields.io/badge/Component-dwc--drawer-%23006aff" alt="Tag Name">
   </a>
 </p>
 
@@ -80,10 +80,10 @@ return
 
   <div class="demo__buttons">
     <a  data-action-toggle-code>
-      <bbj-icon name="chevron-down"></bbj-icon> Show code
+      <dwc-icon name="chevron-down"></dwc-icon> Show code
     </a>
     <a data-action-open-link>
-      <bbj-icon name="external-link"></bbj-icon> Open in new tab
+      <dwc-icon name="external-link"></dwc-icon> Open in new tab
     </a>  
   </div>
 
@@ -93,23 +93,23 @@ return
 style! = "
 : body,html {overflow: hidden}
 :
-: .bbj-toolbar {
+: .dwc-toolbar {
 :    display: flex;
 :    align-items: center;
-:    gap: var(--bbj-space-m);
-:    padding: 0 var(--bbj-space-m);
+:    gap: var(--dwc-space-m);
+:    padding: 0 var(--dwc-space-m);
 : }
 :
-: .bbj-logo {
+: .dwc-logo {
 :    display: flex;
 :    align-items: center;
 :    justify-content: center;
-:    padding: var(--bbj-space-m) 0;
-:    margin-bottom: var(--bbj-space-m);
-:    border-bottom: thin solid var(--bbj-color-default)
+:    padding: var(--dwc-space-m) 0;
+:    margin-bottom: var(--dwc-space-m);
+:    border-bottom: thin solid var(--dwc-color-default)
 : }
 :
-: .bbj-logo img {
+: .dwc-logo img {
 :    max-width: 100px;
 : }
 :
@@ -118,7 +118,7 @@ style! = "
 :    flex-direction: column;
 :    align-items: center;
 :    justify-content: center;
-:    padding: var(--bbj-space-2xl);
+:    padding: var(--dwc-space-2xl);
 :    width: 100%;
 : }
 :
@@ -156,19 +156,19 @@ header! = app!.getHeader()
 
 declare auto BBjChildWindow toolbar! 
 toolbar! = header!.addChildWindow("", $00108800$, sysgui!.getAvailableContext())
-toolbar!.addStyle("bbj-toolbar")
-toolbar!.addStaticText("<html><bbj-icon-button name='menu-2' data-drawer-toggle></bbj-icon-button></html>")
+toolbar!.addStyle("dwc-toolbar")
+toolbar!.addStaticText("<html><dwc-icon-button name='menu-2' data-drawer-toggle></dwc-icon-button></html>")
 toolbar!.addStaticText("<html><h3>DWC Application</h3></html>")
 
 rem Drawer
 rem ==================
 declare auto BBjChildWindow drawer! 
 drawer! = app!.getDrawer()
-drawer!.addStyle("bbj-drawer")
+drawer!.addStyle("dwc-drawer")
 
 declare auto BBjImageCtrl logo! 
 logo! = drawer!.addImageCtrl("./assets/logo.png")
-logo!.addStyle("bbj-logo")
+logo!.addStyle("dwc-logo")
 
 declare auto BBjTabCtrl drawerMenu! 
 drawerMenu! = drawer!.addTabCtrl()
@@ -176,13 +176,13 @@ drawerMenu!.setCallback(drawerMenu!.ON_TAB_SELECT,"onPageChanged")
 drawerMenu!.setAttribute("nobody","true")
 drawerMenu!.setAttribute("borderless","true")
 drawerMenu!.setAttribute("placement","left")
-drawerMenu!.addTab("<bbj-icon name='dashboard'></bbj-icon>      Dashboard"    , -1)
-drawerMenu!.addTab("<bbj-icon name='shopping-cart'></bbj-icon>  Orders"       , -1)
-drawerMenu!.addTab("<bbj-icon name='users'></bbj-icon>          Customers"    , -1)
-drawerMenu!.addTab("<bbj-icon name='box'></bbj-icon>            Products"     , -1)
-drawerMenu!.addTab("<bbj-icon name='files'></bbj-icon>          Documents"    , -1)
-drawerMenu!.addTab("<bbj-icon name='checklist'></bbj-icon>      Tasks"        , -1)
-drawerMenu!.addTab("<bbj-icon name='chart-dots-2'></bbj-icon>   Analytics"    , -1)
+drawerMenu!.addTab("<dwc-icon name='dashboard'></dwc-icon>      Dashboard"    , -1)
+drawerMenu!.addTab("<dwc-icon name='shopping-cart'></dwc-icon>  Orders"       , -1)
+drawerMenu!.addTab("<dwc-icon name='users'></dwc-icon>          Customers"    , -1)
+drawerMenu!.addTab("<dwc-icon name='box'></dwc-icon>            Products"     , -1)
+drawerMenu!.addTab("<dwc-icon name='files'></dwc-icon>          Documents"    , -1)
+drawerMenu!.addTab("<dwc-icon name='checklist'></dwc-icon>      Tasks"        , -1)
+drawerMenu!.addTab("<dwc-icon name='chart-dots-2'></dwc-icon>   Analytics"    , -1)
 
 rem Content
 rem ==================
@@ -267,7 +267,7 @@ welcomePage! = new BBjDrawer(wnd!)
 welcomePage!.setDrawerSize("90vh")
 ```
 
-When using the the drawer `BBjDrawer.PLACEMENT_BOTTOM_CENTER` or `BBjDrawer.PLACEMENT_TOP_CENTER` it is possible to set the max-with using the [CSS custom property][css-vars] `--bbj-drawer-max-width`. By default the max size will be `576px`
+When using the the drawer `BBjDrawer.PLACEMENT_BOTTOM_CENTER` or `BBjDrawer.PLACEMENT_TOP_CENTER` it is possible to set the max-with using the [CSS custom property][css-vars] `--dwc-drawer-max-width`. By default the max size will be `576px`
 
 ## Events
 
@@ -312,10 +312,10 @@ customers data.
 
   <div class="demo__buttons">
     <a  data-action-toggle-code>
-      <bbj-icon name="chevron-down"></bbj-icon> Show code
+      <dwc-icon name="chevron-down"></dwc-icon> Show code
     </a>
     <a data-action-open-link>
-      <bbj-icon name="external-link"></bbj-icon> Open in new tab
+      <dwc-icon name="external-link"></dwc-icon> Open in new tab
     </a>  
   </div>
 
@@ -332,29 +332,29 @@ style! = "
 : }
 :  
 : .contactsList {
-:   padding: var(--bbj-space-m);
+:   padding: var(--dwc-space-m);
 : }
 :
 : .bookEntry {
 :   display: flex;
 :   gap: 1rem;
 :   align-items: center;
-:   padding: var(--bbj-space-s);
-:   cursor: var(--bbj-cursor-click);
-:   transition: background-color var(--bbj-transition);
-:   border-bottom: thin solid var(--bbj-color-default) !important;
+:   padding: var(--dwc-space-s);
+:   cursor: var(--dwc-cursor-click);
+:   transition: background-color var(--dwc-transition);
+:   border-bottom: thin solid var(--dwc-color-default) !important;
 : }
 :
 : .bookEntry:hover {
-:   background-color: var(--bbj-color-primary-alt);
+:   background-color: var(--dwc-color-primary-alt);
 : }
 :
 : .bookEntry__avatar {
 :   display: flex;
 :   align-items: center;
-:   width: var(--bbj-size-l);
-:   height: var(--bbj-size-l);
-:   border-radius: var(--bbj-border-radius-round);
+:   width: var(--dwc-size-l);
+:   height: var(--dwc-size-l);
+:   border-radius: var(--dwc-border-radius-round);
 : }
 :
 : .bookEntry__avatar img {
@@ -369,8 +369,8 @@ style! = "
 : }
 :
 : .bookEntry__location {
-:   font-size: var(--bbj-font-size-s);
-:   color: var(--bbj-color-default-text);
+:   font-size: var(--dwc-font-size-s);
+:   color: var(--dwc-color-default-text);
 : }  
 :"
 
@@ -435,7 +435,7 @@ while iterator!.hasNext()
   location! = info!.addStaticText(fullLocation!)
   location!.addStyle("bookEntry__location")
 
-  call! = card!.addButton("<html><bbj-icon name=""phone""></bbj-icon></html>")
+  call! = card!.addButton("<html><dwc-icon name=""phone""></dwc-icon></html>")
   call!.setEnabled(len(phone!) > 0)
   call!.setUserData(phone!)
   call!.setCallback(call!.ON_BUTTON_PUSH, "onCall")
