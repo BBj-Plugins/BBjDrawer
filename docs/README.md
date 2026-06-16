@@ -50,9 +50,9 @@ use ::BBjDrawer/BBjDrawer.bbj::BBjDrawer
 
 welcomePage! = new BBjDrawer(wnd!)
 welcomePage!.setPlacement(BBjDrawer.PLACEMENT_BOTTOM_CENTER)
-welcomePage!.setDrawerSize("90vh")
+welcomePage!.setSize("90vh")
 
-container! = welcomePage!.getContainer()
+container! = welcomePage!.getContent()
 container!.addStyle("welcome-page")
 
 container!.addImageCtrl("./assets/fun.svg")
@@ -256,18 +256,18 @@ welcomePage!.setPlacement(BBjDrawer.PLACEMENT_BOTTOM_CENTER)
 
 It is possible to configure the drawer size using the `BBjDrawer` methods
 
-1. **`BBjDrawer::setDrawerSize(BBjString size!)`**: If the drawer is placed at `left` or `right`, the size will be the width and If the drawer is placed at `top` or `bottom`, the size will be the height
+1. **`BBjDrawer::setSize(BBjString size!)`**: If the drawer is placed at `left` or `right`, the size will be the width and If the drawer is placed at `top` or `bottom`, the size will be the height
 
-2. **`BBjDrawer::setDrawerMaxSize(BBjString size!)`**: If the drawer is placed at `left` or `right`, the size will be the max width and If the drawer is placed at `top` or `bottom`, the size will be the max height
+2. **`BBjDrawer::setMaxSize(BBjString size!)`**: If the drawer is placed at `left` or `right`, the size will be the max width and If the drawer is placed at `top` or `bottom`, the size will be the max height
 
 ```bbj
 use ::BBjDrawer/BBjDrawer.bbj::BBjDrawer
 
 welcomePage! = new BBjDrawer(wnd!)
-welcomePage!.setDrawerSize("90vh")
+welcomePage!.setSize("90vh")
 ```
 
-When using the the drawer `BBjDrawer.PLACEMENT_BOTTOM_CENTER` or `BBjDrawer.PLACEMENT_TOP_CENTER` it is possible to set the max-with using the [CSS custom property][css-vars] `--dwc-drawer-max-width`. By default the max size will be `576px`
+When using the drawer `BBjDrawer.PLACEMENT_BOTTOM_CENTER` or `BBjDrawer.PLACEMENT_TOP_CENTER` it is possible to set the max-width using the [CSS custom property][css-vars] `--dwc-drawer-max-width`. By default the max width will be `576px`
 
 ## Events
 
@@ -401,7 +401,7 @@ contactsDrawer! = new BBjDrawer(wnd!)
 contactsDrawer!.setPlacement(BBjDrawer.PLACEMENT_BOTTOM_CENTER)
 contactsDrawer!.setSize("70vh")
 
-declare auto BBjChildWindow contactsDrawer! 
+declare auto BBjChildWindow content! 
 content! = contactsDrawer!.getContent()
 content!.addStyle("contactsList")
 

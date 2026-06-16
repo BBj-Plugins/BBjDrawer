@@ -82,7 +82,7 @@ contactsDrawer!.setLabel("Contacts")
 contactsDrawer!.setPlacement(BBjDrawer.PLACEMENT_BOTTOM_CENTER)
 contactsDrawer!.setSize("70vh")
 
-declare auto BBjChildWindow contactsDrawer! 
+declare auto BBjChildWindow content!
 content! = contactsDrawer!.getContent()
 content!.addStyle("contactsList")
 
